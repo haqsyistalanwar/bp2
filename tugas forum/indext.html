@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tambah Data Mahasiswa</title>
+  </head>
+
+  <body
+    style="
+      background-color: #f4f4f9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    "
+  >
+    <h3
+      style="
+        margin-top: 0;
+        color: #1a252f;
+        border-bottom: 2px solid #1a252f;
+        padding-bottom: 10px;
+      "
+    >
+      Tambah Data Mahasiswa
+    </h3>
+
+    <form id="formMahasiswa" novalidate>
+      <!-- Input NIM -->
+      <div style="margin-bottom: 15px">
+        <label
+          for="nim"
+          style="
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+          "
+        >
+          NIM:
+        </label>
+
+        <input
+          type="text"
+          id="nim"
+          placeholder="Masukkan NIM"
+          style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: 0.3s;
+          "
+        />
+
+        <small id="errorNim" style="color: red; display: none">
+          NIM harus berupa 8–15 digit angka!
+        </small>
+      </div>
+
+      <!-- Input Nama -->
+      <div style="margin-bottom: 15px">
+        <label
+          for="nama"
+          style="
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+          "
+        >
+          Nama Lengkap:
+        </label>
+
+        <input
+          type="text"
+          id="nama"
+          placeholder="Masukkan Nama"
+          style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: 0.3s;
+          "
+        />
+
+        <small id="errorNama" style="color: red; display: none">
+          Nama harus diisi!
+        </small>
+      </div>
+
+      <!-- Dropdown Mata Kuliah -->
+      <div style="margin-bottom: 20px">
+        <label
+          for="matkul"
+          style="
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+          "
+        >
+          Mata Kuliah:
+        </label>
+
+        <select
+          id="matkul"
+          style="
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: white;
+            transition: 0.3s;
+          "
+        >
+          <option value="">-- Pilih Mata Kuliah --</option>
+          <option value="Pemrograman Web">Pemrograman Web</option>
+          <option value="Basis Data">Basis Data</option>
+          <option value="Algoritma & Pemrograman">
+            Algoritma & Pemrograman
+          </option>
+        </select>
+
+        <small id="errorMatkul" style="color: red; display: none">
+          Mata kuliah wajib dipilih!
+        </small>
+      </div>
+
+      <!-- Tombol Simpan -->
+      <button
+        type="submit"
+        id="btnSimpan"
+        style="
+          width: 100%;
+          padding: 10px;
+          background-color: #1a252f;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: 0.3s;
+        "
+      >
+        Simpan Data
+      </button>
+
+      <button
+        type="reset"
+        style="
+          width: 100%;
+          padding: 10px;
+          margin-top: 10px;
+          background-color: #dddddd;
+          color: #333;
+          border: none;
+          border-radius: 4px;
+          font-weight: bold;
+          cursor: pointer;
+        "
+      >
+        Reset Form
+      </button>
+    </form>
+
+    <!-- Output Data Mahasiswa -->
+    <div
+      id="output"
+      style="
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      "
+    ></div>
+
+    <script>
+      // Mengambil elemen HTML
+      const form = document.getElementById("formMahasiswa");
+      const inputNim = document.getElementById("nim");
+      const inputNama = document.getElementById("nama");
+      const selectMatkul = document.getElementById("matkul");
+      const tombol = document.getElementById("btnSimpan");
+      const output = document.getElementById("output");
+
+      const errorNim = document.getElementById("errorNim");
+      const errorNama = document.getElementById("errorNama");
+      const errorMatkul = document.getElementById("errorMatkul");
+
+      // 1. HOVER TOMBOL
+      tombol.addEventListener("mouseover", function () {
+        tombol.style.backgroundColor = "blue";
+        tombol.style.transform = "scale(1.02)";
+      });
+
+      tombol.addEventListener("mouseout", function () {
+        tombol.style.backgroundColor = "#1a252f";
+        tombol.style.transform = "scale(1)";
+      });
+
+      // 2. FOCUS DAN BLUR INPUT (Disesuaikan jadi border biru & glow kuning sesuai slide)
+      const semuaInput = [inputNim, inputNama, selectMatkul];
+
+      semuaInput.forEach(function (input) {
+        input.addEventListener("focus", function () {
+          input.style.border = "2px solid #3498db";
+          input.style.boxShadow = "0 0 5px rgba(241, 196, 15, 0.8)"; // Efek glow kuning
+        });
+
+        input.addEventListener("blur", function () {
+          input.style.boxShadow = "none";
+
+          if (input.dataset.valid === "true") {
+            input.style.border = "2px solid green";
+          } else if (input.dataset.valid === "false") {
+            input.style.border = "2px solid red";
+          } else {
+            input.style.border =
+              input.id === "matkul" ? "1px solid #ccc" : "1px solid #dddddd";
+          }
+        });
+      });
+
+      // 3. EFEK MENGETIK NAMA
+      inputNama.addEventListener("input", function () {
+        if (inputNama.value.length > 0) {
+          inputNama.style.backgroundColor = "#eef9ff";
+        } else {
+          inputNama.style.backgroundColor = "white";
+        }
+
+        errorNama.style.display = "none";
+        inputNama.dataset.valid = "";
+        inputNama.style.border = "1px solid #dddddd";
+      });
+
+      // 4. EFEK MEMILIH MATA KULIAH
+      selectMatkul.addEventListener("change", function () {
+        if (selectMatkul.value !== "") {
+          selectMatkul.style.backgroundColor = "#d4edda";
+          selectMatkul.dataset.valid = "true";
+          selectMatkul.style.border = "2px solid green";
+          errorMatkul.style.display = "none";
+        } else {
+          selectMatkul.style.backgroundColor = "white";
+          selectMatkul.dataset.valid = "";
+          selectMatkul.style.border = "1px solid #ccc";
+        }
+      });
+
+      // Menghapus status error saat NIM diketik ulang
+      inputNim.addEventListener("input", function () {
+        errorNim.style.display = "none";
+        inputNim.dataset.valid = "";
+        inputNim.style.border = "1px solid #dddddd";
+      });
+
+      // 5. VALIDASI FORM
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let valid = true;
+        const nim = inputNim.value.trim();
+        const nama = inputNama.value.trim();
+        const matkul = selectMatkul.value;
+
+        errorNim.style.display = "none";
+        errorNama.style.display = "none";
+        errorMatkul.style.display = "none";
+
+        // Validasi NIM 8–15 digit angka
+        if (!/^\d{8,15}$/.test(nim)) {
+          errorNim.style.display = "block";
+          inputNim.style.border = "2px solid red";
+          inputNim.dataset.valid = "false";
+          valid = false;
+        } else {
+          inputNim.style.border = "2px solid green";
+          inputNim.dataset.valid = "true";
+        }
+
+        // Validasi Nama
+        if (nama === "") {
+          errorNama.style.display = "block";
+          inputNama.style.border = "2px solid red";
+          inputNama.dataset.valid = "false";
+          valid = false;
+        } else {
+          inputNama.style.border = "2px solid green";
+          inputNama.dataset.valid = "true";
+        }
+
+        // Validasi Mata Kuliah
+        if (matkul === "") {
+          errorMatkul.style.display = "block";
+          selectMatkul.style.border = "2px solid red";
+          selectMatkul.dataset.valid = "false";
+          valid = false;
+        } else {
+          selectMatkul.style.border = "2px solid green";
+          selectMatkul.dataset.valid = "true";
+        }
+
+        // Jika ada data tidak valid
+        if (!valid) {
+          alert("Harap periksa kembali data yang belum benar!");
+
+          if (!/^\d{8,15}$/.test(nim)) {
+            inputNim.focus();
+          } else if (nama === "") {
+            inputNama.focus();
+          } else {
+            selectMatkul.focus();
+          }
+
+          return;
+        }
+
+        // 6. ALERT DAN OUTPUT DATA
+        alert("Data mahasiswa berhasil disimpan!");
+
+        output.style.display = "block";
+        output.innerHTML = `
+                <h3 style="color: green; margin-top: 0;">
+                    Data Mahasiswa Berhasil Disimpan
+                </h3>
+                <p><b>NIM:</b> ${nim.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                <p><b>Nama Lengkap:</b> ${nama.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                <p><b>Mata Kuliah:</b> ${matkul.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+            `;
+
+        // 7. RESET FORM SETELAH BERHASIL
+        form.reset();
+
+        semuaInput.forEach(function (input) {
+          input.style.backgroundColor = "white";
+          input.style.boxShadow = "none";
+          input.style.border =
+            input.id === "matkul" ? "1px solid #ccc" : "1px solid #dddddd";
+
+          input.dataset.valid = "";
+        });
+
+        errorNim.style.display = "none";
+        errorNama.style.display = "none";
+        errorMatkul.style.display = "none";
+      });
+
+      // Menjaga tampilan tetap bersih ketika tombol Reset diklik
+      form.addEventListener("reset", function () {
+        setTimeout(function () {
+          semuaInput.forEach(function (input) {
+            input.style.backgroundColor = "white";
+            input.style.boxShadow = "none";
+            input.style.border =
+              input.id === "matkul" ? "1px solid #ccc" : "1px solid #dddddd";
+
+            input.dataset.valid = "";
+          });
+
+          errorNim.style.display = "none";
+          errorNama.style.display = "none";
+          errorMatkul.style.display = "none";
+        }, 0);
+      });
+    </script>
+  </body>
+</html>
